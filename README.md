@@ -32,5 +32,25 @@ The application's packaged/dockerized version will be available at `http://local
 ## Linting
 Run `pycodestyle .` to run the linter. `tox.ini` defines the linter config.
 
+## Authentication
+This application uses simplejwt to receive username/password and return a Json Web Token. Send a POST request to http://localhost:8000/api/token/ (for development) such as in this curl example:
+```
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "testuser", "password": "password"}' \
+  http://localhost:8000/api/token/
+```
+The response will return an "access" key containing the JWT and a "refresh" key with the refresh token. Subsequent requests to the api should send an HTTP `Authentication` header with the value `Bearer <access/JWT>`. If the access token has expired but the refresh token has not yet expired, a new token can be obtained by sending a request to http://localhost:8000/api/token/refresh/, as in this curl example:
+```
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"refresh":"<the full JWT>"}' \
+  http://localhost:8000/api/token/refresh/
+
+```
+
 ### Some informal TODO items
 - Postgres is up, but we'll most likely need postgis so look into that.
+- Do username/password JWT auth for now.
