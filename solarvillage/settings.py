@@ -20,12 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pv20tcfey!f3#xezx#=hn1dv2khot)gy($6wfh-fr=@asn5n0z'
+SECRET_KEY = os.getenv('SITE_SECRET_KEY', 'django-insecure-pv20tcfey!f3#xezx#=hn1dv2khot)gy($6wfh-fr=@asn5n0z')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "solar-village-backend.onrender.com"
+]
 
 
 # Application definition
