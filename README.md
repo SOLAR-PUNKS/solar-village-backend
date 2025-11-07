@@ -17,7 +17,7 @@
 ## Running the application
 - `docker-compose up --build --detach`
 - `python manage.py makemigrations`
-- `python manage.py migrate`
+- `./run_migrations.sh` (⚠️ **Important:** Always use this script, not `python manage.py migrate` directly)
 - `python manage.py runserver`
 
 Development server will be available at `http://localhost:8000/api/`. The development server will restart on file changes for quick development.

@@ -2,7 +2,15 @@ Django==5.2.7
 djangorestframework==3.16.1
 djangorestframework-simplejwt==5.5.1
 psycopg[binary]==3.2.12
+python-dotenv==1.1.0
 # Whitenoise for static file serving
 whitenoise==6.11.0
 # Development
 pycodestyle==2.14.0
+
+# Note: GDAL must be installed at the system level for PostGIS support.
+# On Ubuntu/Debian: sudo apt-get install gdal-bin libgdal-dev python3-gdal
+# On macOS: brew install gdal
+# On Fedora: sudo dnf install gdal gdal-devel python3-gdal
+# After installing system GDAL, you may optionally install the Python bindings:
+# pip install GDAL==$(gdal-config --version)

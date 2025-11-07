@@ -21,9 +21,11 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from core.views import MutualAidPostViewSet
 
 
 router = routers.DefaultRouter()
+router.register(r'mutual-aid-posts', MutualAidPostViewSet, basename='mutual-aid-post')
 
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
