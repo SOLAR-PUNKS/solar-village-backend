@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Village - Passkey Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon {
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 14px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .token-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .token-display.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 12px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Solar Village</h1>
+        <p class="subtitle">Passwordless Authentication Test</p>
+
+        <!-- Registration Section -->
+        <div class="section">
+            <h2><span class="icon">✨</span> Register New Account</h2>
+            <div class="info-box">
+                Create a new account using a passkey. Your device will prompt you to authenticate.
+            </div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Username</label>
+                    <input type="text" id="registerUsername" name="username" required placeholder="Enter username" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email (optional)</label>
+                    <input type="email" id="registerEmail" name="email" placeholder="user@example.com" autocomplete="email">
+                </div>
+                <button type="submit" id="registerBtn">
+                    <span id="registerBtnText">Register with Passkey</span>
+                    <span id="registerSpinner" class="spinner hidden"></span>
+                </button>
+            </form>
+            <div id="registerMessage" class="message"></div>
+        </div>
+
+        <!-- Login Section -->
+        <div class="section">
+            <h2><span class="icon">🔑</span> Login</h2>
+            <div class="info-box">
+                Sign in using your registered passkey. No password required!
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" name="username" required placeholder="Enter username" autocomplete="username">
+                </div>
+                <button type="submit" id="loginBtn">
+                    <span id="loginBtnText">Login with Passkey</span>
+                    <span id="loginSpinner" class="spinner hidden"></span>
+                </button>
+            </form>
+            <div id="loginMessage" class="message"></div>
+        </div>
+
+        <!-- Token Display Section -->
+        <div class="section">
+            <h2><span class="icon">🎫</span> Access Token</h2>
+            <div id="tokenDisplay" class="token-display"></div>
+            <div id="tokenMessage" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = window.location.origin;
+        const WEBAUTHN_BASE_URL = `${API_BASE_URL}/webauthn`;
+        const TOKEN_URL = `${API_BASE_URL}/api/webauthn/token/`;
+
+        // Utility functions
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `message ${type} show`;
+        }
+
+        function hideMessage(elementId) {
+            const element = document.getElementById(elementId);
+            element.className = 'message';
+        }
+
+        function setButtonLoading(btnId, spinnerId, textId, loading, text) {
+            const btn = document.getElementById(btnId);
+            const spinner = document.getElementById(spinnerId);
+            const textSpan = document.getElementById(textId);
+            
+            btn.disabled = loading;
+            if (loading) {
+                spinner.classList.remove('hidden');
+                textSpan.textContent = text;
+            } else {
+                spinner.classList.add('hidden');
+                textSpan.textContent = text;
+            }
+        }
+
+        // Base64URL encoding/decoding helpers
+        function base64urlToBuffer(base64url) {
+            const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+            const padLen = (4 - (base64.length % 4)) % 4;
+            const padded = base64 + '='.repeat(padLen);
+            const binary = atob(padded);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function bufferToBase64url(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            const base64 = btoa(binary);
+            return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
+
+        // Get CSRF token from cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Registration Flow
+        async function registerWithPasskey(username, email) {
+            try {
+                hideMessage('registerMessage');
+                setButtonLoading('registerBtn', 'registerSpinner', 'registerBtnText', true, 'Starting...');
+
+                // Step 1: Begin registration
+                const beginResponse = await fetch(`${WEBAUTHN_BASE_URL}/authentication/begin/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        username: username,
+                        email: email || undefined,
+                    }),
+                });
+
+                if (!beginResponse.ok) {
+                    const errorData = await beginResponse.json();
+                    throw new Error(errorData.error || `Registration failed: ${beginResponse.status}`);
+                }
+
+                const options = await beginResponse.json();
+                console.log('Registration options:', options);
+
+                setButtonLoading('registerBtn', 'registerSpinner', 'registerBtnText', true, 'Waiting for device...');
+
+                // Step 2: Convert options for WebAuthn API
+                const publicKeyCredentialCreationOptions = {
+                    challenge: base64urlToBuffer(options.challenge),
+                    rp: options.rp,
+                    pubKeyCredParams: options.pubKeyCredParams,
+                    authenticatorSelection: options.authenticatorSelection,
+                    timeout: options.timeout,
+                    attestation: options.attestation,
+                };
+
+                // Step 3: Create credential
+                const credential = await navigator.credentials.create({
+                    publicKey: publicKeyCredentialCreationOptions
+                });
+
+                console.log('Credential created:', credential);
+
+                setButtonLoading('registerBtn', 'registerSpinner', 'registerBtnText', true, 'Completing...');
+
+                // Step 4: Complete registration
+                const credentialJSON = {
+                    id: credential.id,
+                    rawId: bufferToBase64url(credential.rawId),
+                    type: credential.type,
+                    response: {
+                        attestationObject: bufferToBase64url(credential.response.attestationObject),
+                        clientDataJSON: bufferToBase64url(credential.response.clientDataJSON),
+                    },
+                };
+
+                const completeResponse = await fetch(`${WEBAUTHN_BASE_URL}/authentication/complete/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(credentialJSON),
+                });
+
+                if (!completeResponse.ok) {
+                    const errorData = await completeResponse.json();
+                    throw new Error(errorData.error || `Registration completion failed: ${completeResponse.status}`);
+                }
+
+                const result = await completeResponse.json();
+                console.log('Registration complete:', result);
+
+                showMessage('registerMessage', '✅ Registration successful! You can now login.', 'success');
+                document.getElementById('registerForm').reset();
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                showMessage('registerMessage', `❌ ${error.message}`, 'error');
+            } finally {
+                setButtonLoading('registerBtn', 'registerSpinner', 'registerBtnText', false, 'Register with Passkey');
+            }
+        }
+
+        // Login Flow
+        async function loginWithPasskey(username) {
+            try {
+                hideMessage('loginMessage');
+                hideMessage('tokenMessage');
+                document.getElementById('tokenDisplay').classList.remove('show');
+                setButtonLoading('loginBtn', 'loginSpinner', 'loginBtnText', true, 'Starting...');
+
+                // Step 1: Begin authentication (passwordless login)
+                // Using BeginCredentialAuthenticationView from django-otp-webauthn
+                const beginResponse = await fetch(`${WEBAUTHN_BASE_URL}/authentication/begin/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        username: username,
+                    }),
+                });
+
+                if (!beginResponse.ok) {
+                    const errorData = await beginResponse.json();
+                    throw new Error(errorData.error || `Login failed: ${beginResponse.status}`);
+                }
+
+                const options = await beginResponse.json();
+                console.log('Login options:', options);
+
+                setButtonLoading('loginBtn', 'loginSpinner', 'loginBtnText', true, 'Waiting for device...');
+
+                // Step 2: Convert options for WebAuthn API
+                // Handle empty allowCredentials array (passwordless login shows all available passkeys)
+                const publicKeyCredentialRequestOptions = {
+                    challenge: base64urlToBuffer(options.challenge),
+                    timeout: options.timeout,
+                    rpId: options.rpId,
+                    allowCredentials: options.allowCredentials && options.allowCredentials.length > 0
+                        ? options.allowCredentials.map(cred => ({
+                            type: cred.type,
+                            id: base64urlToBuffer(cred.id),
+                            transports: cred.transports,
+                        }))
+                        : undefined, // undefined means show all available passkeys
+                    userVerification: options.userVerification,
+                };
+
+                // Step 3: Get credential
+                const assertion = await navigator.credentials.get({
+                    publicKey: publicKeyCredentialRequestOptions
+                });
+
+                console.log('Assertion received:', assertion);
+
+                setButtonLoading('loginBtn', 'loginSpinner', 'loginBtnText', true, 'Completing...');
+
+                // Step 4: Complete authentication
+                // Using CompleteCredentialAuthenticationView from django-otp-webauthn
+                const assertionJSON = {
+                    id: assertion.id,
+                    rawId: bufferToBase64url(assertion.rawId),
+                    type: assertion.type,
+                    response: {
+                        authenticatorData: bufferToBase64url(assertion.response.authenticatorData),
+                        clientDataJSON: bufferToBase64url(assertion.response.clientDataJSON),
+                        signature: bufferToBase64url(assertion.response.signature),
+                        userHandle: assertion.response.userHandle ? bufferToBase64url(assertion.response.userHandle) : null,
+                    },
+                };
+
+                const completeResponse = await fetch(`${WEBAUTHN_BASE_URL}/authentication/complete/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(assertionJSON),
+                });
+
+                if (!completeResponse.ok) {
+                    const errorData = await completeResponse.json();
+                    throw new Error(errorData.error || `Login completion failed: ${completeResponse.status}`);
+                }
+
+                const loginResult = await completeResponse.json();
+                console.log('Login complete:', loginResult);
+
+                showMessage('loginMessage', '✅ Login successful! Getting tokens...', 'success');
+
+                // Step 5: Get JWT tokens
+                setTimeout(async () => {
+                    await getJWTTokens();
+                }, 500);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('loginMessage', `❌ ${error.message}`, 'error');
+            } finally {
+                setButtonLoading('loginBtn', 'loginSpinner', 'loginBtnText', false, 'Login with Passkey');
+            }
+        }
+
+        // Get JWT Tokens after successful login
+        async function getJWTTokens() {
+            try {
+                const tokenResponse = await fetch(TOKEN_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    credentials: 'include',
+                });
+
+                if (!tokenResponse.ok) {
+                    const errorData = await tokenResponse.json();
+                    throw new Error(errorData.error || 'Failed to get tokens');
+                }
+
+                const tokens = await tokenResponse.json();
+                console.log('JWT Tokens received:', tokens);
+
+                // Display tokens
+                const tokenDisplay = document.getElementById('tokenDisplay');
+                tokenDisplay.textContent = `Access Token:\n${tokens.access}\n\nRefresh Token:\n${tokens.refresh}`;
+                tokenDisplay.classList.add('show');
+                
+                showMessage('tokenMessage', '✅ JWT tokens obtained successfully! You can now use these tokens to access protected APIs.', 'success');
+
+            } catch (error) {
+                console.error('Token error:', error);
+                showMessage('tokenMessage', `❌ ${error.message}`, 'error');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            
+            if (!username) {
+                showMessage('registerMessage', '❌ Username is required', 'error');
+                return;
+            }
+
+            await registerWithPasskey(username, email);
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            
+            if (!username) {
+                showMessage('loginMessage', '❌ Username is required', 'error');
+                return;
+            }
+
+            await loginWithPasskey(username);
+        });
+
+        // Check WebAuthn support on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!window.PublicKeyCredential) {
+                alert('⚠️ WebAuthn is not supported on this browser. Please use a modern browser that supports passkeys.');
+            }
+            console.log('WebAuthn Test Page Loaded');
+            console.log('API Base URL:', API_BASE_URL);
+        });
+    </script>
+</body>
+</html>
+

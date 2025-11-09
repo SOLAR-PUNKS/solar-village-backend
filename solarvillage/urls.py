@@ -22,14 +22,19 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from core.views import MutualAidPostViewSet
+from core.webauthn_views import webauthn_token_view
+from core.webauthn_test_view import webauthn_test_page
 
 
 router = routers.DefaultRouter()
 router.register(r'mutual-aid-posts', MutualAidPostViewSet, basename='mutual-aid-post')
 
 urlpatterns = [
+    path('', webauthn_test_page, name='webauthn_test'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/webauthn/token/', webauthn_token_view, name='webauthn_token'),
+    path('webauthn/', include('django_otp_webauthn.urls', namespace='otp_webauthn')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),

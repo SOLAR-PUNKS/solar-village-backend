@@ -1,12 +1,15 @@
 Django==5.2.7
 djangorestframework==3.16.1
 djangorestframework-simplejwt==5.5.1
+django-otp>=1.6.3
+django-otp-webauthn==0.7.0
 psycopg[binary]==3.2.12
 python-dotenv==1.1.0
 # Whitenoise for static file serving
 whitenoise==6.11.0
 # Development
 pycodestyle==2.14.0
+django-sslserver-v2==1.0
 
 # Note: GDAL must be installed at the system level for PostGIS support.
 # On Ubuntu/Debian: sudo apt-get install gdal-bin libgdal-dev python3-gdal

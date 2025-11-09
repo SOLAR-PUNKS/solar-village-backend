@@ -30,13 +30,17 @@ SECRET_KEY = os.getenv('SITE_SECRET_KEY', 'django-insecure-pv20tcfey!f3#xezx#=hn
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    os.getenv('ALLOWED_HOST', 'localhost')
+    os.getenv('ALLOWED_HOST', 'localhost'),
+]
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{os.getenv('ALLOWED_HOST', 'localhost')}",
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'sslserver',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,6 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_otp',
+    'django_otp_webauthn',
     'core',
 ]
 
@@ -56,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -142,6 +149,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
 
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'django_otp_webauthn.backends.WebAuthnBackend',
+]
+
+RP_ID = os.getenv('ALLOWED_HOST', 'localhost')
+OTP_WEBAUTHN_RP_NAME = "Solar Village"
+OTP_WEBAUTHN_RP_ID = RP_ID
+
+OTP_WEBAUTHN_ALLOWED_ORIGINS = [
+    f'https://{RP_ID}',
+    f'https://{RP_ID}:8005',
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

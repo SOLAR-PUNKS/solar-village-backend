@@ -57,7 +57,7 @@ class MutualAidPostSerializer(serializers.ModelSerializer):
         """Create post with location from lat/lng."""
         latitude = validated_data.pop('latitude')
         longitude = validated_data.pop('longitude')
-        validated_data['location'] = Point(longitude, latitude, srid=4326)
+        validated_data['location'] = Point(longitude, latitude, srid=4326) # degrees
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
@@ -65,6 +65,6 @@ class MutualAidPostSerializer(serializers.ModelSerializer):
         if 'latitude' in validated_data and 'longitude' in validated_data:
             latitude = validated_data.pop('latitude')
             longitude = validated_data.pop('longitude')
-            validated_data['location'] = Point(longitude, latitude, srid=4326)
+            validated_data['location'] = Point(longitude, latitude, srid=4326) # degrees
         return super().update(instance, validated_data)
 

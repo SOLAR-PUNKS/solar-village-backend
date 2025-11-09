@@ -33,6 +33,11 @@ The application's packaged/dockerized version will be available at `http://local
 Run `pycodestyle .` to run the linter. `tox.ini` defines the linter config.
 
 ## Authentication
+
+This application supports two authentication methods:
+
+### Username/Password Authentication
+
 This application uses simplejwt to receive username/password and return a Json Web Token. Send a POST request to http://localhost:8000/api/token/ (for development) such as in this curl example:
 ```
 curl \
@@ -48,9 +53,47 @@ curl \
   -H "Content-Type: application/json" \
   -d '{"refresh":"<the full JWT>"}' \
   http://localhost:8000/api/token/refresh/
-
 ```
 
-### Some informal TODO items
-- Postgres is up, but we'll most likely need postgis so look into that.
-- Do username/password JWT auth for now.
+### Passkey Authentication (Passwordless)
+
+This application supports passwordless authentication using WebAuthn passkeys (Apple Passkeys, Android device authentication, or security keys). Users can authenticate using device biometrics without requiring a password.
+
+#### Registration Flow
+
+1. **Register a passkey**: Users must first register a passkey using the django-otp-webauthn registration endpoints at `/webauthn/register/`. This typically requires:
+   - User to be logged in (or create an account first)
+   - Browser support for WebAuthn
+   - Device with biometric authentication or security key
+
+2. **Complete registration**: The frontend will handle the WebAuthn registration flow using the browser's Web Authentication API.
+
+#### Authentication Flow
+
+1. **Initiate authentication**: The client initiates passkey authentication using the django-otp-webauthn endpoints at `/webauthn/login/`.
+
+2. **Complete authentication**: The user authenticates using their device's biometric sensor or security key.
+
+3. **Get JWT tokens**: After successful passkey authentication, call `/api/webauthn/token/` to receive JWT tokens:
+```
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -H "Cookie: sessionid=<session_id>" \
+  http://localhost:8000/api/webauthn/token/
+```
+
+The response will return an "access" key containing the JWT and a "refresh" key with the refresh token, in the same format as username/password authentication. Subsequent requests to the API should send an HTTP `Authentication` header with the value `Bearer <access/JWT>`.
+
+#### Requirements
+
+- **HTTPS in production**: WebAuthn requires HTTPS in production environments (localhost is allowed for development)
+- **Browser compatibility**: Passkeys are supported in modern browsers (Chrome 67+, Firefox 60+, Safari 13+, Edge 18+)
+- **Domain configuration**: The `ALLOWED_HOST` environment variable must be set correctly for production
+
+#### Notes
+
+- Users can register multiple passkeys (devices)
+- Passkey authentication is passwordless - no password is required
+- JWT tokens from passkey authentication are compatible with the existing API authentication system
+- Username/password authentication remains available alongside passkeys
