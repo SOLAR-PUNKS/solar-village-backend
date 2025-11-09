@@ -21,13 +21,14 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from core.views import MutualAidPostViewSet
+from core.views import MutualAidPostViewSet, CommunityResourceViewSet
 from core.webauthn_views import webauthn_token_view
 from core.webauthn_test_view import webauthn_test_page
 
 
 router = routers.DefaultRouter()
 router.register(r'mutual-aid-posts', MutualAidPostViewSet, basename='mutual-aid-post')
+router.register(r'community-resources', CommunityResourceViewSet, basename='community-resource')
 
 urlpatterns = [
     path('', webauthn_test_page, name='webauthn_test'),

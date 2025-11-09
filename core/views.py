@@ -3,8 +3,8 @@ from rest_framework.decorators import action
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
-from .models import MutualAidPost
-from .serializers import MutualAidPostSerializer
+from .models import MutualAidPost, CommunityResource
+from .serializers import MutualAidPostSerializer, CommunityResourceSerializer
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -83,3 +83,56 @@ class MutualAidPostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Set the created_by field to the current user."""
         serializer.save(created_by=self.request.user)
+
+
+class CommunityResourceViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Read-only ViewSet for viewing CommunityResource instances.
+    Community resources are managed by backend data ingestion service, not via UI.
+    """
+    queryset = CommunityResource.objects.filter(is_active=True)
+    serializer_class = CommunityResourceSerializer
+    permission_classes = [permissions.AllowAny]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description', 'address', 'city', 'state']
+    ordering_fields = ['name', 'created_at', 'resource_type']
+    ordering = ['name']
+
+    def get_queryset(self):
+        """Filter queryset based on query parameters."""
+        queryset = CommunityResource.objects.filter(is_active=True)
+
+        # Filter by resource_type
+        resource_type = self.request.query_params.get('resource_type', None)
+        if resource_type:
+            queryset = queryset.filter(resource_type=resource_type)
+
+        # Filter by location (distance-based)
+        latitude = self.request.query_params.get('latitude', None)
+        longitude = self.request.query_params.get('longitude', None)
+        radius = self.request.query_params.get('radius', None)
+
+        if latitude and longitude and radius:
+            try:
+                lat = float(latitude)
+                lng = float(longitude)
+                radius_km = float(radius)
+
+                # Validate coordinates
+                if not (-90 <= lat <= 90) or not (-180 <= lng <= 180):
+                    return queryset.none()
+
+                # Create point from coordinates
+                user_location = Point(lng, lat, srid=4326)
+
+                # Filter by distance using PostGIS
+                queryset = queryset.annotate(
+                    distance=Distance('location', user_location)
+                ).filter(
+                    location__distance_lte=(user_location, D(km=radius_km))
+                ).order_by('distance')
+            except (ValueError, TypeError):
+                # Invalid parameters, return empty queryset
+                return queryset.none()
+
+        return queryset
