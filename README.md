@@ -4,7 +4,22 @@
 - If we're doing a container for deployment, we must know what the https situation is and ensure that it's implemented.
 - The Gunicorn settings in gunicorn.conf.py should be given a look over for prod suitability 
 
+## Running the app locally for testing with frontend
+- With docker desktop installed, run `docker-compose up --build`. This should be all that is required. The app will be available at `localhost`. 
+
 ## Prerequisites
+
+App can be developed locally on your dev machine or you can use VSCode's devcontainers to develop inside a container. If you're using linux, set up is easy enough. If you're on windows, installing GDAL so that Geodjango works can be painful so devcontainers can help with that. If you get an error that GDAL wasn't found, it's likely the install didn't go as expected. 
+
+### Developing with devcontainers (recommended for windows)
+- Docker compose must be installed
+- Install the VSCode devcontainers extension
+- Ctrl + Shift + P > Dev Containers: Rebuild and Open in container to open the repo inside a container with everything installed using the Dockerfile.
+  - Ctrl + Shift + P > Dev Containers: Rebuild when desired, such as after updating the Dockerfile
+
+From there, if you open a terminal in VSCode you're in a python container built from the Dockerfile, minus the ending CMD. Therefore, you'll need to manually run `python manage.py migrate` the first time. Run `python manage.py runserver 0.0.0.0:80` to run the development server and develop as normal. You can still use `docker-compose down --volumes` outside the container to nuke the volumes.
+
+### Prerequisites for local development
 - Python must be installed (Python 13 for now, though python14 is unlikely to hurt anything)
 - Docker compose must be installed
 - For first time setup, run these commands locally:
@@ -13,11 +28,19 @@
         - Windows: `venv\Scripts\activate`
         - Linux/bash: `source venv/bin/activate`
     - `pip install -r requirements.txt`
+    - Install gdal
+    ```
+    # On Ubuntu/Debian: sudo apt-get install gdal-bin libgdal-dev python3-gdal
+    # On macOS: brew install gdal
+    # On Fedora: sudo dnf install gdal gdal-devel python3-gdal
+    # After installing system GDAL, you may optionally install the Python bindings:
+    # pip install GDAL==$(gdal-config --version)
+    ```
 
-## Running the application
+### Running the application for local development (after installing all prereqs)
 - `docker-compose up --build --detach`
 - `python manage.py makemigrations`
-- `./run_migrations.sh` (⚠️ **Important:** Always use this script, not `python manage.py migrate` directly)
+- `python manage.py migrate`
 - `python manage.py runserver`
 
 Development server will be available at `http://localhost:8000/api/`. The development server will restart on file changes for quick development.

@@ -4,7 +4,7 @@ This command is used for seeding the database with test data.
 """
 from django.core.management.base import BaseCommand
 from django.contrib.gis.geos import Point
-from core.models import CommunityResource
+from mutualaid.models import CommunityResource
 
 
 class Command(BaseCommand):

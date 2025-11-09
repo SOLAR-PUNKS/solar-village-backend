@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from core.views import MutualAidPostViewSet, CommunityResourceViewSet
+from mutualaid.views import MutualAidPostViewSet, CommunityResourceViewSet
 from core.webauthn_views import webauthn_token_view
 from core.webauthn_test_view import webauthn_test_page
 
