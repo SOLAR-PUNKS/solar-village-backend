@@ -93,6 +93,7 @@ class CommunityResourceSerializer(serializers.ModelSerializer):
             'website',
             'hours',
             'hours_display',
+            'special_hours',
             'eligibility_requirements',
             'services',
             'is_active',

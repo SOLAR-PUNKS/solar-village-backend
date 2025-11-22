@@ -42,7 +42,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 INSTALLED_APPS = [
     'sslserver',
-    'core', # Must go first because it has the User model that admin depends on
+    'core',  # Must go first because it has the User model that admin depends on
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

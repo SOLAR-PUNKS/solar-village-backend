@@ -183,4 +183,3 @@ class Command(BaseCommand):
                 f'Created: {created_count}, Updated: {updated_count}'
             )
         )
-

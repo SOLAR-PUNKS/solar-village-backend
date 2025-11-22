@@ -86,6 +86,7 @@ class CommunityResource(models.Model):
         help_text="Structured operating hours. Format: {'monday': {'open': '09:00', 'close': '17:00'}, ...}",
         default=dict
     )
+    special_hours = models.TextField(blank=True)
     eligibility_requirements = models.TextField(blank=True, help_text="Eligibility requirements for this resource")
     services = models.TextField(blank=True, help_text="Additional services offered")
     is_active = models.BooleanField(default=True, help_text="Whether this resource is currently active")
